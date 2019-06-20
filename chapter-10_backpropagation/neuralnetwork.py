@@ -46,7 +46,7 @@ class NeuralNetwork:
         D = D[::-1]
 
         for layer in np.arange(0, len(self.W)):
-            self.W[layer] += -self.alpha * A[layer]
+            self.W[layer] += -self.alpha * A[layer].T.dot(D[layer])
 
     def fit(self, X, y, epochs=1000, displayUpdate=100):
         X = np.c_[X, np.ones((X.shape[0]))]
