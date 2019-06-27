@@ -21,4 +21,4 @@ nn.fit(X, y, epochs=20000)
 for x, target in zip(X, y):
     pred = nn.predict(x)[0][0]
     step = 1 if pred > 0.5 else 0
-    print('[INFO] data={},ground-truth={},pred={},step={}'.format(x, target, pred, step))
+    print('[INFO] data={},ground-truth={},pred={},step={}'.format(x, target[0], pred, step))

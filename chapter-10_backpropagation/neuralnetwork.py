@@ -23,7 +23,8 @@ class NeuralNetwork:
             w = np.random.randn(layers[i] + 1, layers[i + 1] + 1)
             self.W.append(w)
         w = np.random.randn(layers[-2] + 1, layers[-1])
-        self.W.append(w / np.sqrt(layers[-2]))
+        # self.W.append(w / np.sqrt(layers[-2]))
+        self.W.append(w)
 
     def sigmoid(self, x):
         return 1.0 / (1 + np.exp(-x))
@@ -37,8 +38,8 @@ class NeuralNetwork:
             net = A[layer].dot(self.W[layer])
             out = self.sigmoid(net)
             A.append(out)
-            error = A[-1] - y
-            D = [error * self.sigmoid_driv(A[-1])]
+        error = A[-1] - y
+        D = [error * self.sigmoid_driv(A[-1])]
         for layer in np.arange(len(A) - 2, 0, -1):
             delta = D[-1].dot(self.W[layer].T)
             delta = delta * self.sigmoid_driv(A[layer])
@@ -70,12 +71,14 @@ class NeuralNetwork:
     def calculate_loss(self, X, targets):
         targets = np.atleast_2d(targets)
         predictions = self.predict(X, addBias=False)
+        # predictions = predictions.argmax(axis=1)
         loss = 0.5 * np.sum((predictions - targets) ** 2)
         return loss
 
     def __repr__(self):
         return 'NeuralNetwork:{}'.format('-'.join(str(l) for l in self.layers))
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     nn = NeuralNetwork([2, 2, 1])
     print(nn)
