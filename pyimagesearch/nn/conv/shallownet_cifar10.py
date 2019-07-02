@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 print('[INFO] laoading CIFAR-10 data...')
-trainX, trainY, testX, testY = cifar10.load_data()
+(trainX, trainY), (testX, testY) = cifar10.load_data()
 trainX, testX = trainX.astype('float') / 255.0, testX.astype('float') / 255.0
 
 lb = LabelBinarizer()

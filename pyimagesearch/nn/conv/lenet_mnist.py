@@ -11,28 +11,36 @@
 '''
 
 from pyimagesearch.nn.conv.lenet import LeNet
-from keras.optimizers import  SGD
+from keras.optimizers import SGD
 from sklearn.preprocessing import LabelBinarizer
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
-from sklearn import datasets
+from keras.datasets import mnist
 from keras import backend as K
 import matplotlib.pyplot as plt
 import numpy as np
 
 print('[INFO] access MNIST...')
-dataset = datasets.fetch_mldata('MNIST Original')
-data = dataset.data
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+img_rows = img_cols = 28
 
-if K.image_data_format()=='channels_first':
-    data = data.reshape(data.shape[0],1,28,28)
+if K.image_data_format() == 'channels_first':
+    x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
+    x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
+    input_shape = (1, img_rows, img_cols)
 else:
-    data = data.reshape(data.shape[0],28,28,1)
+    x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+    x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+    input_shape = (img_rows, img_cols, 1)
 
-trainX,testX,trainY,testY = train_test_split(data/255.0,dataset.target.astype('int'),
-                                             test_size = 0.25,random_state=42)
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train /= 255
+x_test /= 255
+print('x_train shape:', x_train.shape)
+print(x_train.shape[0], 'train samples')
+print(x_test.shape[0], 'test samples')
 le = LabelBinarizer()
-trainY,testY = le.fit_transform(trainY),le.fit_transform(testY)
+trainY,testY = le.fit_transform(y_train),le.fit_transform(y_test)
 
 print('[INFO] compiling model...')
 opt= SGD(0.01)
@@ -40,11 +48,11 @@ model = LeNet.build(width=28,height=28,depth=1,classes=10)
 model.compile(loss='categorical_crossentropy',metrics=['accuracy'],optimizer=opt)
 
 print('[INFO] training network....')
-H = model.fit(trainX,trainY,validation_data=(testX,testY),batch_size=128,
+H = model.fit(x_train,trainY,validation_data=(x_test,testY),batch_size=128,
               epochs=20,verbose=1)
 
 print('[INFO] evaluating network....')
-predictions = model.predict(testX,batch_size=128)
+predictions = model.predict(x_test,batch_size=128)
 print(classification_report(testY.argmax(axis=1),predictions.argmax(axis=1),
                             target_names=[str(x) for x in le.classes_]))
 
